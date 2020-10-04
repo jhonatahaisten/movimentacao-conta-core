@@ -1,0 +1,19 @@
+version: '3'
+services:
+  mongodbconta:
+    image: mongo:latest
+    container_name: mongodbconta
+    ports:
+      - "27017:27017"
+  movimentacao-api:
+    image: movimentacao-api-docker-compose
+    build: .
+    container_name: "movimentacao-api"
+    ports:
+      - "8080:80"
+    links:
+      - mongodbconta
+  mongo-seed:
+    build: ./Models/MongoSeed
+    links:
+      - mongodbconta
