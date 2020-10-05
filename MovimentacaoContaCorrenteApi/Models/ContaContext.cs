@@ -14,18 +14,13 @@ public class ContaContext: IContaContext
 
     public Conta getConta(int nrConta)
     {
-        ProjectionDefinition<Conta> projection = Builders<Conta>.Projection.Include("conta").Include("saldo");//.Exclude("_id");
+        ProjectionDefinition<Conta> projection = Builders<Conta>.Projection.Include("conta").Include("saldo");
 
         return _iConta.Find<Conta>(conta => conta.conta == nrConta).Project<Conta>(projection).FirstOrDefault();
     }
 
     public void updateSaldoConta(int nrConta, OperacaoConta objOperacao)
     {
-        /*ProjectionDefinition<Conta> projection = Builders<Conta>.Projection.Include("conta").Include("saldo").Exclude("_id");
-        FindOneAndUpdateOptions<Conta, Conta> result = new FindOneAndUpdateOptions<Conta, Conta>();
-        ProjectionDefinition<Conta> projection = Builders<Conta>.Projection.Include("conta").Include("saldo").Exclude("_id");
-        result.Projection = projection;*/
-
         var objFilter = Builders<Conta>.Filter.Eq("conta", nrConta);
         var objUpdateDefinition = Builders<Conta>.Update.Inc(conta => conta.saldo, objOperacao.valor);
 

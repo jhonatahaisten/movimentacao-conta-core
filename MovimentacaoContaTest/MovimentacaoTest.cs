@@ -11,13 +11,11 @@ namespace MovimentacaoContaTest
     public class MovimentacaoTest
     {
         private readonly Mock<IContaRepository> _iContaRepository;
-        //private readonly Mock<IContaContext> _iContaContext;
         private MovimentacaoController _movimentacaoController;
 
         public MovimentacaoTest()
         {
             _iContaRepository = new Mock<IContaRepository>();
-            //_iContaContext = new Mock<IContaContext>();
             _movimentacaoController = new MovimentacaoController(_iContaRepository.Object);
         }
 

@@ -11,6 +11,7 @@ public class ContaRepository : IContaRepository
 
     public Conta getConta(int conta)
     {
+        //consulta o saldo atualizado da conta
         return _context.getConta(conta);
     }
 
