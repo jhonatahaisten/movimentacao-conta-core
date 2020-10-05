@@ -1,8 +1,5 @@
-using System;
 using Xunit;
-using MovimentacaoContaCorrenteApi;
 using Moq;
-using MongoDB.Bson.Serialization.Serializers;
 using MovimentacaoContaCorrenteApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +9,8 @@ namespace MovimentacaoContaTest
     {
         private readonly Mock<IContaRepository> _iContaRepository;
         private MovimentacaoController _movimentacaoController;
+        Conta objConta;
+        OperacaoConta objOperacao;
 
         public MovimentacaoTest()
         {
@@ -19,6 +18,7 @@ namespace MovimentacaoContaTest
             _movimentacaoController = new MovimentacaoController(_iContaRepository.Object);
         }
 
+        #region Testes Controler
         [Fact]
         public void consultarSaldo()
         {
@@ -31,18 +31,9 @@ namespace MovimentacaoContaTest
         [Fact]
         public void saqueSucesso()
         {
-            Conta objConta = new Conta
-            {
-                conta = 12,
-                saldo = 123
-            };
-            _iContaRepository.Setup(r => r.getConta(It.IsAny<int>())).Returns(objConta);
+            mockPadrao();
 
-            OperacaoConta objOperacao = new OperacaoConta
-            {
-                conta = 12,
-                valor = 120
-            };
+            _iContaRepository.Setup(r => r.getConta(It.IsAny<int>())).Returns(objConta);
 
             ActionResult<Conta> objRetorno = _movimentacaoController.sacar(objConta.conta, objOperacao);
 
@@ -52,18 +43,10 @@ namespace MovimentacaoContaTest
         [Fact]
         public void saqueComSaldoMenor()
         {
-            Conta objConta = new Conta
-            {
-                conta = 12,
-                saldo = 123
-            };
-            _iContaRepository.Setup(r => r.getConta(It.IsAny<int>())).Returns(objConta);
+            mockPadrao();
+            objOperacao.valor += objConta.saldo;
 
-            OperacaoConta objOperacao = new OperacaoConta
-            {
-                conta = 12,
-                valor = 12300
-            };
+            _iContaRepository.Setup(r => r.getConta(It.IsAny<int>())).Returns(objConta);
 
             ActionResult<Conta> objRetorno = _movimentacaoController.sacar(objConta.conta, objOperacao);
             
@@ -73,13 +56,9 @@ namespace MovimentacaoContaTest
         [Fact]
         public void saqueContaInexistente()
         {
-            _iContaRepository.Setup(r => r.getConta(It.IsAny<int>())).Returns((Conta)null);
+            mockPadrao();
 
-            OperacaoConta objOperacao = new OperacaoConta
-            {
-                conta = 12,
-                valor = 12300
-            };
+            _iContaRepository.Setup(r => r.getConta(It.IsAny<int>())).Returns((Conta)null);
 
             ActionResult<Conta> objRetorno = _movimentacaoController.sacar(objOperacao.conta, objOperacao);
 
@@ -89,22 +68,93 @@ namespace MovimentacaoContaTest
         [Fact]
         public void depositoSucesso()
         {
-            Conta objConta = new Conta
-            {
-                conta = 12,
-                saldo = 123
-            };
-            _iContaRepository.Setup(r => r.getConta(It.IsAny<int>())).Returns(objConta);
+            mockPadrao();
 
-            OperacaoConta objOperacao = new OperacaoConta
-            {
-                conta = 12,
-                valor = 120
-            };
+            _iContaRepository.Setup(r => r.getConta(It.IsAny<int>())).Returns(objConta);
 
             ActionResult<Conta> objRetorno = _movimentacaoController.depositar(objOperacao.conta, objOperacao);
 
             Assert.IsType<OkObjectResult>(objRetorno.Result);
+        }
+        #endregion
+
+        #region Testes Context
+        [Fact]
+        public void getConta()
+        {
+            mockPadrao();
+
+            Mock<IContaContext> iContext = new Mock<IContaContext>();            
+            iContext.Setup(r => r.getConta(It.IsAny<int>())).Returns(objConta);
+
+            Conta objContaRetornado = new ContaRepository(iContext.Object).getConta(It.IsAny<int>());
+            
+            Assert.Equal(objConta.conta, objContaRetornado.conta);
+        }
+
+        [Fact]
+        public void updateSaldoConta()
+        {
+            Mock<IContaContext> iContext = new Mock<IContaContext>();
+            iContext.Setup(r => r.updateSaldoConta(It.IsAny<int>(), It.IsAny<OperacaoConta>()));
+
+            ContaRepository repository = new ContaRepository(iContext.Object);
+            repository.updateSaldoConta(It.IsAny<int>(), It.IsAny<OperacaoConta>());
+        }
+        #endregion
+
+        #region Conn
+        [Fact]
+        public void connectionComUser()
+        {
+            MongoConnString conn = new MongoConnString() { User = "xx", Password = "xx", Port = 3030, Database = "yy", Host = "ii" };
+            string strConnection = conn.ConnectionString;
+
+            Assert.Contains(conn.User, strConnection);
+        }
+
+        [Fact]
+        public void connectionSemPass()
+        {
+            MongoConnString conn = new MongoConnString() { User = "xx", Port = 3030, Database = "yy", Host = "ii" };
+            string strConnection = conn.ConnectionString;
+
+            Assert.DoesNotContain(conn.User, strConnection);
+        }
+
+        /*[Fact]
+        public void context()
+        {
+            MongoConnString conn = new MongoConnString() { User = "xx" };
+
+            Assert.Contains(conn.User, conn.ConnectionString);
+            ContaContext contaContext = new ContaContext(new MongoConnString() { User = "xx" });
+
+
+            mockPadrao();
+
+            Mock<IContaContext> iContext = new Mock<IContaContext>();
+            iContext.Setup(r => r.getConta(It.IsAny<int>())).Returns(objConta);
+
+            Conta objContaRetornado = new ContaRepository(iContext.Object).getConta(It.IsAny<int>());
+
+            Assert.Equal(objConta.conta, objContaRetornado.conta);
+        }*/
+        #endregion
+
+        private void mockPadrao()
+        {
+            objConta = new Conta
+            {
+                conta = 12,
+                saldo = 123
+            };
+
+            objOperacao = new OperacaoConta
+            {
+                conta = 12,
+                valor = 120
+            };
         }
     }
 }
