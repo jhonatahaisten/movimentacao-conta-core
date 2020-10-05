@@ -2,6 +2,7 @@ using Xunit;
 using Moq;
 using MovimentacaoContaCorrenteApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 
 namespace MovimentacaoContaTest
 {
@@ -11,11 +12,15 @@ namespace MovimentacaoContaTest
         private MovimentacaoController _movimentacaoController;
         Conta objConta;
         OperacaoConta objOperacao;
+        private Mock<IMongoDatabase> _mockDB;
+        private Mock<IMongoClient> _mockClient;        
 
         public MovimentacaoTest()
         {
             _iContaRepository = new Mock<IContaRepository>();
             _movimentacaoController = new MovimentacaoController(_iContaRepository.Object);
+            _mockDB = new Mock<IMongoDatabase>();
+            _mockClient = new Mock<IMongoClient>();
         }
 
         #region Testes Controler
@@ -122,24 +127,24 @@ namespace MovimentacaoContaTest
             Assert.DoesNotContain(conn.User, strConnection);
         }
 
-        /*[Fact]
+        [Fact]
         public void context()
         {
-            MongoConnString conn = new MongoConnString() { User = "xx" };
-
-            Assert.Contains(conn.User, conn.ConnectionString);
-            ContaContext contaContext = new ContaContext(new MongoConnString() { User = "xx" });
-
-
             mockPadrao();
+            var settings = new MongoConnString()
+            {
+                Database = "Teste",
+                User = "xx",
+                Port = 3030,
+                Host = "yy"
+            };
 
-            Mock<IContaContext> iContext = new Mock<IContaContext>();
-            iContext.Setup(r => r.getConta(It.IsAny<int>())).Returns(objConta);
+            _mockClient.Setup(c => c.GetDatabase(settings.Database, null)).Returns(_mockDB.Object);
 
-            Conta objContaRetornado = new ContaRepository(iContext.Object).getConta(It.IsAny<int>());
+            var context = new ContaContext(settings);
 
-            Assert.Equal(objConta.conta, objContaRetornado.conta);
-        }*/
+            Assert.NotNull(context);
+        }
         #endregion
 
         private void mockPadrao()
@@ -154,7 +159,7 @@ namespace MovimentacaoContaTest
             {
                 conta = 12,
                 valor = 120
-            };
+            };            
         }
     }
 }
