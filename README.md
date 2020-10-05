@@ -33,12 +33,12 @@ ENTÃO a API atualizará o saldo da conta no banco de dados, retornará HttpStat
 
 **Cenário 4:**
 Consultar saldo informando o número da conta
-ENTÃO a API consultará o saldo da conta no banco de dados, retornardo HttpStatusCode 200 e um payload contendo saldo e número da conta
+ENTÃO a API consultará o saldo da conta no banco de dados, retornando HttpStatusCode 200 e um payload contendo saldo e número da conta.
 
 
 ## Executando testes unitários
 
-Para executar os testes unitários da aplicação, executar o comando abaixo no diretório do projeto de testes:
+Para executar os testes unitários da aplicação, execute o comando abaixo no diretório do projeto de testes:
 ```
 dotnet test /p:CollectCoverage=true
 ```
