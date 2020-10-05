@@ -39,3 +39,8 @@ ENTÃO a API consultará o saldo da conta no banco de dados, retornardo HttpStat
 
 
 ## Executando testes unitários
+
+Para executar os testes unitários da aplicação, executar o comando abaixo no diretório do projeto de testes:
+```
+dotnet test /p:CollectCoverage=true
+```
