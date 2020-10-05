@@ -19,6 +19,8 @@ Além disso, a API também está disponibilizada na AWS: http://3.94.121.110:808
 
 ## Cenários e retornos da API
 
+Para facilitar a realização dos testes, recomendo utilizar as contas já cadastradas na base de dados, as quais foram cadastradas através do arquivo MovimentacaoContaCorrenteApi\Models\MongoSeed\conta.json
+
 **Cenário 1:**
 Sacar informando o número da conta e um valor válido
 ENTÃO a API retornará HttpStatusCode 200 e um payload contendo saldo atualizado e número da conta
