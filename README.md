@@ -1,6 +1,3 @@
-## Rodando aplicação docker local
-
-
 ## Rodando API em docker local
 Abra a aplicação no VS Code ou Visual Studio, dependendo da IDE utilizada será necessário baixar as dependências usando:
 ```console
@@ -21,19 +18,20 @@ Além disso, a API também está disponibilizada na AWS: http://3.94.121.110:808
 
 
 ## Cenários e retornos da API
-###Cenário 1:
+
+**Cenário 1:**
 Sacar informando o número da conta e um valor válido
 ENTÃO a API retornará HttpStatusCode 200 e um payload contendo saldo atualizado e número da conta
 
-###Cenário 2:
+**Cenário 2:**
 Sacar informando o número da conta e um valor maior do que o meu saldo
 ENTÃO a API retornará HttpStatusCode 422
 
-###Cenário 3:
+**Cenário 3:**
 Depositar informando o número da conta e um valor válido
 ENTÃO a API atualizará o saldo da conta no banco de dados, retornará HttpStatusCode 200 e um payload contendo saldo atualizado e número da conta
 
-###Cenário 4:
+**Cenário 4:**
 Consultar saldo informando o número da conta
 ENTÃO a API consultará o saldo da conta no banco de dados, retornardo HttpStatusCode 200 e um payload contendo saldo e número da conta
 
